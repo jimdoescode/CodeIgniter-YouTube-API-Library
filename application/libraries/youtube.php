@@ -42,8 +42,6 @@ class youtube
         'STANDARD_WATCH_ON_MOBILE_URI'      => 'feeds/api/standardfeeds/watch_on_mobile',
         'USER_URI'                          => 'feeds/api/users',
         'INBOX_FEED_URI'                    => 'feeds/api/users/default/inbox',
-        'FRIEND_ACTIVITY_FEED_URI'          => 'feeds/api/users/default/friendsactivity',
-        'ACTIVITY_FEED_URI'                 => 'feeds/api/events',
         'VIDEO_URI'                         => 'feeds/api/videos',
         'USER_UPLOADS_REL'                  => 'schemas/2007#user.uploads',
         'USER_PLAYLISTS_REL'                => 'schemas/2007#user.playlists',
@@ -226,7 +224,9 @@ class youtube
         $url = self::URI_BASE.substr($uri, 1);
 
         $fullrequest = $this->_build_header($url, $request, self::LINE_END);
-
+        
+        if(self::DEBUG)error_log($fullrequest);
+        
         $handle = $this->_connect();
         $this->_write($handle, $fullrequest);
         $output = $this->_read($handle);
@@ -257,9 +257,9 @@ class youtube
      * @param string $videoId The videoId of interest
      * @return the xml response from youtube.
      */
-    public function getRelatedVideoFeed($videoId)
+    public function getRelatedVideoFeed($videoId, $start = 1, $count = 10)
     {
-        return $this->_response_request("/{$this->_uris['VIDEO_URI']}/{$videoId}/related");
+        return $this->_response_request("/{$this->_uris['VIDEO_URI']}/{$videoId}/related?start-index={$start}&max-results={$count}");
     }
 
     /**
@@ -268,9 +268,9 @@ class youtube
      * @param string $videoId The videoId of interest
      * @return the xml response from youtube.
      */
-    public function getVideoResponseFeed($videoId)
+    public function getVideoResponseFeed($videoId, $start = 1, $count = 10)
     {
-        return $this->_response_request("/{$this->_uris['VIDEO_URI']}/{$videoId}/responses");
+        return $this->_response_request("/{$this->_uris['VIDEO_URI']}/{$videoId}/responses?start-index={$start}&max-results={$count}");
     }
 
     /**
@@ -279,44 +279,44 @@ class youtube
      * @param string $videoId The videoId of interest
      * @return the xml response from youtube.
      */
-    public function getVideoCommentFeed($videoId)
+    public function getVideoCommentFeed($videoId, $start = 1, $count = 10)
     {
-        return $this->_response_request("/{$this->_uris['VIDEO_URI']}/{$videoId}/comments");
+        return $this->_response_request("/{$this->_uris['VIDEO_URI']}/{$videoId}/comments?start-index={$start}&max-results={$count}");
     }
 
-    public function getTopRatedVideoFeed()
+    public function getTopRatedVideoFeed($start = 1, $count = 10)
     {
-        return $this->_response_request("/{$this->_uris['STANDARD_TOP_RATED_URI']}");
+        return $this->_response_request("/{$this->_uris['STANDARD_TOP_RATED_URI']}?start-index={$start}&max-results={$count}");
     }
     
-    public function getMostViewedVideoFeed()
+    public function getMostViewedVideoFeed($start = 1, $count = 10)
     {
-        return $this->_response_request("/{$this->_uris['STANDARD_MOST_VIEWED_URI']}");
+        return $this->_response_request("/{$this->_uris['STANDARD_MOST_VIEWED_URI']}?start-index={$start}&max-results={$count}");
     }
 
-    public function getRecentlyFeaturedVideoFeed()
+    public function getRecentlyFeaturedVideoFeed($start = 1, $count = 10)
     {
-        return $this->_response_request("/{$this->_uris['STANDARD_RECENTLY_FEATURED_URI']}");
+        return $this->_response_request("/{$this->_uris['STANDARD_RECENTLY_FEATURED_URI']}?start-index={$start}&max-results={$count}");
     }
 
-    public function getWatchOnMobileVideoFeed()
+    public function getWatchOnMobileVideoFeed($start = 1, $count = 10)
     {
-        return $this->_response_request("/{$this->_uris['STANDARD_WATCH_ON_MOBILE_URI']}");
+        return $this->_response_request("/{$this->_uris['STANDARD_WATCH_ON_MOBILE_URI']}?start-index={$start}&max-results={$count}");
     }
 
-    public function getPlaylistListFeed($user = 'default')
+    public function getPlaylistListFeed($user = 'default', $start = 1, $count = 10)
     {
-        return $this->_response_request("/{$this->_uris['USER_URI']}/{$user}/playlists");
+        return $this->_response_request("/{$this->_uris['USER_URI']}/{$user}/playlists?start-index={$start}&max-results={$count}");
     }
 
-    public function getSubscriptionFeed($user = 'default')
+    public function getSubscriptionFeed($user = 'default', $start = 1, $count = 10)
     {
-        return $this->_response_request("/{$this->_uris['USER_URI']}/{$user}/subscription");
+        return $this->_response_request("/{$this->_uris['USER_URI']}/{$user}/subscription?start-index={$start}&max-results={$count}");
     }
 
-    public function getContactFeed($user = 'default')
+    public function getContactFeed($user = 'default', $start = 1, $count = 10)
     {
-        return $this->_response_request("/{$this->_uris['USER_URI']}/{$user}/contacts");
+        return $this->_response_request("/{$this->_uris['USER_URI']}/{$user}/contacts?v=2");
     }
 
     /**
@@ -325,16 +325,18 @@ class youtube
      * is used.
      *
      * @param string $user the youtube user name of the user whose uploads you want.
+     * @param int $start the offset into the video list to start at (note the index is 1 based).
+     * @param int $count the maximum number of videos to return (the max allowed by youtube is 50)
      * @return the xml response from youtube.
      **/
-    public function getUserUploads($user = 'default')
+    public function getUserUploads($user = 'default', $start = 1, $count = 10)
     {
-        return $this->_response_request("/{$this->_uris['USER_URI']}/{$user}/uploads");
+        return $this->_response_request("/{$this->_uris['USER_URI']}/{$user}/uploads?start-index={$start}&max-results={$count}");
     }
 
-    public function getUserFavorites($user = 'default')
+    public function getUserFavorites($user = 'default', $start = 1, $count = 10)
     {
-        return $this->_response_request("/{$this->_uris['USER_URI']}/{$user}/favorites");
+        return $this->_response_request("/{$this->_uris['USER_URI']}/{$user}/favorites?start-index={$start}&max-results={$count}");
     }
 
     public function getUserProfile($user = 'default')
@@ -344,15 +346,9 @@ class youtube
 
     public function getActivityForUser($user = 'default')
     {
-        return $this->_response_request("/{$this->_uris['ACTIVITY_FEED_URI']}?author={$user}");
+        return $this->_response_request("/{$this->_uris['USER_URI']}/{$user}/events?v=2");
     }
 
-    public function getFriendActivityForCurrentUser()
-    {
-        if($this->_access !== false)return $this->_response_request("/{$this->_uris['FRIEND_ACTIVITY_FEED_URI']}");
-        else return false;
-    }
-    
     /**
      * Get a feed of the currently authenticated users inbox.
      *

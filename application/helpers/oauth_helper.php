@@ -133,8 +133,22 @@ function build_auth_array($baseurl, $key, $secret, $extra = array(), $method = '
     $auth['oauth_version'] = '1.0';
 
     $auth = array_merge($auth, $extra);
-    if(strtoupper($algo) == OAUTH_ALGORITHMS::HMAC_SHA1)$auth['oauth_signature'] = sign_hmac_sha1($method, $baseurl, $secret, $auth);
-    else if(strtoupper($algo) == OAUTH_ALGORITHMS::RSA_SHA1)$auth['oauth_signature'] = sign_rsa_sha1 ($method, $baseurl, $secret, $auth);
+    
+    //We want to remove any query parameters from the base url
+    $urlsegs = explode("?", $baseurl);
+    $baseurl = $urlsegs[0];
+    
+    //If there are any query parameters we need to make sure they
+    //get signed with the rest of the auth data.
+    $signing = $auth;
+    if(count($urlsegs) > 1)
+    {
+        preg_match_all("/([\w\-]+?)\=([\w\d\-]+)[\&]*/", $urlsegs[1], $matches);
+        $signing = $signing + array_combine($matches[1], $matches[2]);
+    }
+    
+    if(strtoupper($algo) == OAUTH_ALGORITHMS::HMAC_SHA1)$auth['oauth_signature'] = sign_hmac_sha1($method, $baseurl, $secret, $signing);
+    else if(strtoupper($algo) == OAUTH_ALGORITHMS::RSA_SHA1)$auth['oauth_signature'] = sign_rsa_sha1 ($method, $baseurl, $secret, $signing);
   
     $auth['oauth_signature'] = urlencode($auth['oauth_signature']);
     return $auth;
