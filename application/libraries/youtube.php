@@ -255,6 +255,8 @@ class youtube
      * Retrieves a feed of videos related to the specified video ID.
      *
      * @param string $videoId The videoId of interest
+     * @param int $start the offset into the video list to start at (note the index is 1 based).
+     * @param int $count the maximum number of videos to return (the max allowed by youtube is 50)
      * @return the xml response from youtube.
      */
     public function getRelatedVideoFeed($videoId, $start = 1, $count = 10)
@@ -266,6 +268,8 @@ class youtube
      * Retrieves a feed of video responses related to the specified video ID.
      *
      * @param string $videoId The videoId of interest
+     * @param int $start the offset into the video list to start at (note the index is 1 based).
+     * @param int $count the maximum number of videos to return (the max allowed by youtube is 50)
      * @return the xml response from youtube.
      */
     public function getVideoResponseFeed($videoId, $start = 1, $count = 10)
@@ -277,6 +281,8 @@ class youtube
      * Retrieves a feed of video comments related to the specified video ID.
      *
      * @param string $videoId The videoId of interest
+     * @param int $start the offset into the comment list to start at (note the index is 1 based).
+     * @param int $count the maximum number of comments to return (the max allowed by youtube is 50)
      * @return the xml response from youtube.
      */
     public function getVideoCommentFeed($videoId, $start = 1, $count = 10)
@@ -344,7 +350,7 @@ class youtube
         return $this->_response_request("/{$this->_uris['USER_URI']}/{$user}");
     }
 
-    public function getActivityForUser($user = 'default')
+    public function getUserActivity($user = 'default')
     {
         return $this->_response_request("/{$this->_uris['USER_URI']}/{$user}/events?v=2");
     }
