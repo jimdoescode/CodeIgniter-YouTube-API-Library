@@ -276,6 +276,20 @@ class youtube
     {
         return $this->_response_request("/{$this->_uris['VIDEO_URI']}/{$videoId}/responses?start-index={$start}&max-results={$count}");
     }
+    
+    /**
+     * Retrieves a feed of videos based on an array of keywords.
+     *
+     * @param array $keywords Individual words to search by.
+     * @param int $start the offset into the video list to start at (note the index is 1 based).
+     * @param int $count the maximum number of videos to return (the max allowed by youtube is 50)
+     * @return the xml response from youtube.
+     */
+    public function getKeywordVideoFeed(array $keywords, $start = 1, $count = 10)
+    {
+        $keystr = implode('%2C', $keywords);
+        return $this->_response_request("/{$this->_uris['VIDEO_URI']}?category={$keystr}&start-index={$start}&max-results={$count}&v=2");
+    }
 
     /**
      * Retrieves a feed of video comments related to the specified video ID.
