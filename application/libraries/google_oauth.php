@@ -29,14 +29,8 @@ THE SOFTWARE.
  * changing the SCOPE constant. You will need to pass in
  * your consumer key and secret upon loading this library.
  *
- * I would like to note that the HMAC-SHA1 hashes google
- * generates seem to be different from those that are correctly
- * generated it could be I was signing my requests wrong (I did
- * make some corrections to how that works on the helper) or its
- * possible that google is doing it wrong (I read a number of
- * posts about people seeking help who were told to use RSA).
- * Either way I can say that I have used the RSA-SHA1 signing
- * method with out any issues and I would recommend you use that.
+ * I currently use it in my YouTube API but it can be used
+ * for any google service that allows for OAuth.
  */
 class google_oauth
 {

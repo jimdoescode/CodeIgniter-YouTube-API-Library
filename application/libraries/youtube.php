@@ -30,6 +30,7 @@ class youtube
     const SCHEME = 'http';
     const METHOD = 'GET';
     const LINE_END = "\r\n";
+    const API_VERSION = '2';
 
     const URI_BASE = 'http://gdata.youtube.com/';
 
@@ -60,7 +61,8 @@ class youtube
         'Host'=>self::HOST,
         'Connection'=>'close',
         'User-Agent'=>'CodeIgniter',
-        'Accept-encoding'=>'identity'
+        'Accept-encoding'=>'identity',
+        'GData-Version'=>self::API_VERSION
     );
 
     private $_oauth = array();
@@ -288,7 +290,7 @@ class youtube
     public function getKeywordVideoFeed(array $keywords, $start = 1, $count = 10)
     {
         $keystr = implode('%2C', $keywords);
-        return $this->_response_request("/{$this->_uris['VIDEO_URI']}?category={$keystr}&start-index={$start}&max-results={$count}&v=2");
+        return $this->_response_request("/{$this->_uris['VIDEO_URI']}?category={$keystr}&start-index={$start}&max-results={$count}");
     }
 
     /**
