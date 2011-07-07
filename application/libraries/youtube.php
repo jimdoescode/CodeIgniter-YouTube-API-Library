@@ -77,7 +77,7 @@ class youtube
     public function youtube($params)
     {
         if(isset($params['apikey']))$this->_header['X-GData-Key'] = 'key='.$params['apikey'];
-        $this->CI = get_instance();
+        $this->CI =& get_instance();
         if(isset($params['oauth']))
         {
             $this->_oauth['key'] = $params['oauth']['key'];

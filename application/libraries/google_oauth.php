@@ -58,7 +58,7 @@ class google_oauth
      */
     public function google_oauth($params)
     {
-        $this->CI = get_instance();
+        $this->CI =& get_instance();
         $this->CI->load->helper('oauth');
         //Set defaults for method and algorithm if they are not specified
         if(!array_key_exists('method', $params))$params['method'] = 'GET';
