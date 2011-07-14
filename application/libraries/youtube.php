@@ -438,7 +438,6 @@ class youtube
             //Add the file name to the slug parameter.
             $extra .= "Slug: ".basename($path).self::LINE_END;
             //Create a random boundry string.
-            $this->CI = get_instance();
             $this->CI->load->helper('string');
             $boundry = random_string();
             $extra .= "Content-Type: multipart/related; boundary=\"{$boundry}\"".self::LINE_END;
