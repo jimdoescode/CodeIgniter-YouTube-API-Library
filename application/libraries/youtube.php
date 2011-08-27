@@ -34,7 +34,7 @@ class youtube
 
     const URI_BASE = 'http://gdata.youtube.com/';
 
-    const DEBUG = true;
+    const DEBUG = false;
 
     private $_uris = array(
         'STANDARD_TOP_RATED_URI'            => 'feeds/api/standardfeeds/top_rated',

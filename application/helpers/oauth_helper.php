@@ -146,7 +146,7 @@ function build_auth_array($baseurl, $key, $secret, $extra = array(), $method = '
         preg_match_all("/([\w\-]+)\=([\w\d\-\%\.\$\+\*]+)\&?/", $urlsegs[1], $matches);
         $signing = $signing + array_combine($matches[1], $matches[2]);
     }
-    error_log(print_r($signing, true));
+    
     if(strtoupper($algo) == OAUTH_ALGORITHMS::HMAC_SHA1)$auth['oauth_signature'] = sign_hmac_sha1($method, $baseurl, $secret, $signing);
     else if(strtoupper($algo) == OAUTH_ALGORITHMS::RSA_SHA1)$auth['oauth_signature'] = sign_rsa_sha1 ($method, $baseurl, $secret, $signing);
   
