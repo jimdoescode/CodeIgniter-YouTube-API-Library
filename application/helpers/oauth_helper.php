@@ -55,7 +55,7 @@ function sign_hmac_sha1($method, $baseurl, $secret, array $parameters)
     {
         //Don't include the token secret into the base string
         if(strtolower($key) != 'oauth_token_secret')$oauth .= "&{$key}={$value}";
-    }    
+    }
     $data .= urlencode(substr($oauth, 1));
     $secret .= '&'.$parameters['oauth_token_secret'];
     
@@ -143,10 +143,10 @@ function build_auth_array($baseurl, $key, $secret, $extra = array(), $method = '
     $signing = $auth;
     if(count($urlsegs) > 1)
     {
-        preg_match_all("/([\w\-]+)\=([\w\d\-\%\.]+)\&?/", $urlsegs[1], $matches);
+        preg_match_all("/([\w\-]+)\=([\w\d\-\%\.\$\+\*]+)\&?/", $urlsegs[1], $matches);
         $signing = $signing + array_combine($matches[1], $matches[2]);
     }
-    
+    error_log(print_r($signing, true));
     if(strtoupper($algo) == OAUTH_ALGORITHMS::HMAC_SHA1)$auth['oauth_signature'] = sign_hmac_sha1($method, $baseurl, $secret, $signing);
     else if(strtoupper($algo) == OAUTH_ALGORITHMS::RSA_SHA1)$auth['oauth_signature'] = sign_rsa_sha1 ($method, $baseurl, $secret, $signing);
   

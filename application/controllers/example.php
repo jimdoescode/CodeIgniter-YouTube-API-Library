@@ -39,7 +39,7 @@ class Example extends CI_Controller
 		$params['apikey'] = 'ENTER YOUR GOOGLE YOUTUBE API KEY';
 		
 		$this->load->library('youtube', $params);
-		echo $this->youtube->getKeywordVideoFeed(array('pac', 'man'));
+		echo $this->youtube->getKeywordVideoFeed('pac man');
 	}
 	
 	//This method can be called after you executed

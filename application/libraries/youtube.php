@@ -34,7 +34,7 @@ class youtube
 
     const URI_BASE = 'http://gdata.youtube.com/';
 
-    const DEBUG = false;
+    const DEBUG = true;
 
     private $_uris = array(
         'STANDARD_TOP_RATED_URI'            => 'feeds/api/standardfeeds/top_rated',
@@ -219,8 +219,9 @@ class youtube
      * @param $uri The URI that corresponds to the data we want.
      * @return the xml response from youtube.
      **/
-    private function _response_request($uri)
+    private function _response_request($uri, array $params = array())
     {
+        if(!empty($params))$uri .= '?'.http_build_query($params);
         $request = self::METHOD." {$uri} HTTP/".self::HTTP_1.self::LINE_END;
 
         $url = self::URI_BASE.substr($uri, 1);
@@ -247,98 +248,95 @@ class youtube
      *         Only possible if entry belongs to currently authenticated user.
      * @return the xml response from youtube
      */
-    public function getVideoEntry($videoId, $fullEntry = false)
+    public function getVideoEntry($videoId, $fullEntry = false, array $params = array())
     {
-        if($fullEntry)return $this->_response_request ("/{$this->_uris['USER_URI']}/default/uploads/{$videoId}");
-        else return $this->_response_request ("/{$this->_uris['VIDEO_URI']}/{$videoId}");
+        if($fullEntry)return $this->_response_request("/{$this->_uris['USER_URI']}/default/uploads/{$videoId}", $params);
+        else return $this->_response_request("/{$this->_uris['VIDEO_URI']}/{$videoId}", $params);
     }
 
     /**
      * Retrieves a feed of videos related to the specified video ID.
      *
      * @param string $videoId The videoId of interest
-     * @param int $start the offset into the video list to start at (note the index is 1 based).
-     * @param int $count the maximum number of videos to return (the max allowed by youtube is 50)
+     * @param array $params additional parameters to pass to youtube see: http://code.google.com/apis/youtube/2.0/reference.html#Query_parameter_definitions
      * @return the xml response from youtube.
      */
-    public function getRelatedVideoFeed($videoId, $start = 1, $count = 10)
+    public function getRelatedVideoFeed($videoId, array $params = array())
     {
-        return $this->_response_request("/{$this->_uris['VIDEO_URI']}/{$videoId}/related?start-index={$start}&max-results={$count}");
+        return $this->_response_request("/{$this->_uris['VIDEO_URI']}/{$videoId}/related", array_merge(array('start-index'=>1, 'max-results'=>10), $params));
     }
 
     /**
      * Retrieves a feed of video responses related to the specified video ID.
      *
      * @param string $videoId The videoId of interest
-     * @param int $start the offset into the video list to start at (note the index is 1 based).
-     * @param int $count the maximum number of videos to return (the max allowed by youtube is 50)
+     * @param array $params additional parameters to pass to youtube see: http://code.google.com/apis/youtube/2.0/reference.html#Query_parameter_definitions
      * @return the xml response from youtube.
      */
-    public function getVideoResponseFeed($videoId, $start = 1, $count = 10)
+    public function getVideoResponseFeed($videoId, array $params = array())
     {
-        return $this->_response_request("/{$this->_uris['VIDEO_URI']}/{$videoId}/responses?start-index={$start}&max-results={$count}");
+        return $this->_response_request("/{$this->_uris['VIDEO_URI']}/{$videoId}/responses", array_merge(array('start-index'=>1, 'max-results'=>10), $params));
     }
     
     /**
      * Retrieves a feed of videos based on an array of keywords.
      *
-     * @param array $keywords Individual words to search by.
-     * @param int $start the offset into the video list to start at (note the index is 1 based).
-     * @param int $count the maximum number of videos to return (the max allowed by youtube is 50)
+     * @param string $keywords Words to search by. Use "" for exact search, - for not and | for or.
+     * @param array $params additional parameters to pass to youtube see: http://code.google.com/apis/youtube/2.0/reference.html#Query_parameter_definitions
      * @return the xml response from youtube.
      */
-    public function getKeywordVideoFeed(array $keywords, $start = 1, $count = 10)
+    public function getKeywordVideoFeed($keywords, array $params = array())
     {
-        $keystr = implode('%2C', $keywords);
-        return $this->_response_request("/{$this->_uris['VIDEO_URI']}?category={$keystr}&start-index={$start}&max-results={$count}");
+        //Only need to convert spaces the rest get converted later.
+        $params['q'] = str_replace(' ', '+', $keywords);
+        return $this->_response_request("/{$this->_uris['VIDEO_URI']}", array_merge(array('start-index'=>1, 'max-results'=>10), $params));
     }
 
     /**
      * Retrieves a feed of video comments related to the specified video ID.
      *
      * @param string $videoId The videoId of interest
-     * @param int $start the offset into the comment list to start at (note the index is 1 based).
-     * @param int $count the maximum number of comments to return (the max allowed by youtube is 50)
+     * @param array $params additional parameters to pass to youtube see: http://code.google.com/apis/youtube/2.0/reference.html#Query_parameter_definitions
      * @return the xml response from youtube.
      */
-    public function getVideoCommentFeed($videoId, $start = 1, $count = 10)
+    public function getVideoCommentFeed($videoId, array $params = array())
     {
-        return $this->_response_request("/{$this->_uris['VIDEO_URI']}/{$videoId}/comments?start-index={$start}&max-results={$count}");
+        return $this->_response_request("/{$this->_uris['VIDEO_URI']}/{$videoId}/comments", array_merge(array('start-index'=>1, 'max-results'=>10), $params));
     }
 
-    public function getTopRatedVideoFeed($start = 1, $count = 10)
+    public function getTopRatedVideoFeed(array $params = array())
     {
-        return $this->_response_request("/{$this->_uris['STANDARD_TOP_RATED_URI']}?start-index={$start}&max-results={$count}");
+        return $this->_response_request("/{$this->_uris['STANDARD_TOP_RATED_URI']}", array_merge(array('start-index'=>1, 'max-results'=>10), $params));
     }
     
-    public function getMostViewedVideoFeed($start = 1, $count = 10)
+    public function getMostViewedVideoFeed(array $params = array())
     {
-        return $this->_response_request("/{$this->_uris['STANDARD_MOST_VIEWED_URI']}?start-index={$start}&max-results={$count}");
+        return $this->_response_request("/{$this->_uris['STANDARD_MOST_VIEWED_URI']}", array_merge(array('start-index'=>1, 'max-results'=>10), $params));
     }
 
-    public function getRecentlyFeaturedVideoFeed($start = 1, $count = 10)
+    public function getRecentlyFeaturedVideoFeed(array $params = array())
     {
-        return $this->_response_request("/{$this->_uris['STANDARD_RECENTLY_FEATURED_URI']}?start-index={$start}&max-results={$count}");
+        return $this->_response_request("/{$this->_uris['STANDARD_RECENTLY_FEATURED_URI']}", array_merge(array('start-index'=>1, 'max-results'=>10), $params));
     }
 
-    public function getWatchOnMobileVideoFeed($start = 1, $count = 10)
+    public function getWatchOnMobileVideoFeed(array $params = array())
     {
-        return $this->_response_request("/{$this->_uris['STANDARD_WATCH_ON_MOBILE_URI']}?start-index={$start}&max-results={$count}");
+        return $this->_response_request("/{$this->_uris['STANDARD_WATCH_ON_MOBILE_URI']}", array_merge(array('start-index'=>1, 'max-results'=>10), $params));
     }
 
-    public function getPlaylistListFeed($user = 'default', $start = 1, $count = 10)
+    public function getPlaylistListFeed($user = 'default', array $params = array())
     {
-        return $this->_response_request("/{$this->_uris['USER_URI']}/{$user}/playlists?start-index={$start}&max-results={$count}");
+        return $this->_response_request("/{$this->_uris['USER_URI']}/{$user}/playlists", array_merge(array('start-index'=>1, 'max-results'=>10), $params));
     }
 
-    public function getSubscriptionFeed($user = 'default', $start = 1, $count = 10)
+    public function getSubscriptionFeed($user = 'default', array $params = array())
     {
-        return $this->_response_request("/{$this->_uris['USER_URI']}/{$user}/subscription?start-index={$start}&max-results={$count}");
+        return $this->_response_request("/{$this->_uris['USER_URI']}/{$user}/subscription", array_merge(array('start-index'=>1, 'max-results'=>10), $params));
     }
 
-    public function getContactFeed($user = 'default', $start = 1, $count = 10)
+    public function getContactFeed($user = 'default', array $params = array())
     {
-        return $this->_response_request("/{$this->_uris['USER_URI']}/{$user}/contacts?v=2");
+        return $this->_response_request("/{$this->_uris['USER_URI']}/{$user}/contacts", array_merge(array('v'=>self::API_VERSION), $params));
     }
 
     /**
@@ -347,18 +345,17 @@ class youtube
      * is used.
      *
      * @param string $user the youtube user name of the user whose uploads you want.
-     * @param int $start the offset into the video list to start at (note the index is 1 based).
-     * @param int $count the maximum number of videos to return (the max allowed by youtube is 50)
+     * @param array $params additional parameters to pass to youtube see: http://code.google.com/apis/youtube/2.0/reference.html#Query_parameter_definitions
      * @return the xml response from youtube.
      **/
-    public function getUserUploads($user = 'default', $start = 1, $count = 10)
+    public function getUserUploads($user = 'default', array $params = array())
     {
-        return $this->_response_request("/{$this->_uris['USER_URI']}/{$user}/uploads?start-index={$start}&max-results={$count}");
+        return $this->_response_request("/{$this->_uris['USER_URI']}/{$user}/uploads", array_merge(array('start-index'=>1, 'max-results'=>10), $params));
     }
 
-    public function getUserFavorites($user = 'default', $start = 1, $count = 10)
+    public function getUserFavorites($user = 'default', array $params = array())
     {
-        return $this->_response_request("/{$this->_uris['USER_URI']}/{$user}/favorites?start-index={$start}&max-results={$count}");
+        return $this->_response_request("/{$this->_uris['USER_URI']}/{$user}/favorites", array_merge(array('start-index'=>1, 'max-results'=>10), $params));
     }
 
     public function getUserProfile($user = 'default')
@@ -366,9 +363,9 @@ class youtube
         return $this->_response_request("/{$this->_uris['USER_URI']}/{$user}");
     }
 
-    public function getUserActivity($user = 'default')
+    public function getUserActivity($user = 'default', array $params = array())
     {
-        return $this->_response_request("/{$this->_uris['USER_URI']}/{$user}/events?v=2");
+        return $this->_response_request("/{$this->_uris['USER_URI']}/{$user}/events", array_merge(array('v'=>self::API_VERSION), $params));
     }
 
     /**
