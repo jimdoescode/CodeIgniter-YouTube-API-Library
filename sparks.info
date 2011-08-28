@@ -1,0 +1,4 @@
+name: youtube
+version: 1.0.0
+compatibility: 2.0.3
+tags: ["youtube", "youtube api", "google oauth", "api"]
