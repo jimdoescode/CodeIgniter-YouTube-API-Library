@@ -11,6 +11,7 @@ Usage
 Copy the files under your application directory. Then load the library like this:
 
 $params['apikey'] = 'YOUTUBE API KEY';
+
 $this->load->library('youtube', $params);
 
 $this->youtube->getMostViewedVideoFeed(array('max-results'=>30));
