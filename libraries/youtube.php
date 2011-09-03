@@ -61,8 +61,7 @@ class youtube
         'Host'=>self::HOST,
         'Connection'=>'close',
         'User-Agent'=>'CodeIgniter',
-        'Accept-encoding'=>'identity',
-        'GData-Version'=>self::API_VERSION
+        'Accept-encoding'=>'identity'
     );
 
     private $_oauth = array();
