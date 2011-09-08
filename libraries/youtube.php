@@ -43,9 +43,9 @@ class youtube
         'STANDARD_WATCH_ON_MOBILE_URI'      => 'feeds/api/standardfeeds/watch_on_mobile',
         'USER_URI'                          => 'feeds/api/users',
         'INBOX_FEED_URI'                    => 'feeds/api/users/default/inbox',
-        'VIDEO_URI'                         => 'feeds/api/videos',
         'SUBSCRIPTION_URI'                  => 'feeds/api/users/default/subscriptions',
         'FAVORITE_URI'                      => 'feeds/api/users/default/favorites',
+        'VIDEO_URI'                         => 'feeds/api/videos',
         'USER_UPLOADS_REL'                  => 'schemas/2007#user.uploads',
         'USER_PLAYLISTS_REL'                => 'schemas/2007#user.playlists',
         'USER_SUBSCRIPTIONS_REL'            => 'schemas/2007#user.subscriptions',
@@ -381,7 +381,7 @@ class youtube
     }
 
     /**
-     * Executes a request and passes metadata, the returns the response.
+     * Executes a request and passes metadata, then returns the response.
      *
      * @param $uri the URI for this request.
      * @param $metadata the data to send for this request (usually XML)
@@ -530,7 +530,7 @@ class youtube
      *
      * @param string $videoId the youtube video id.
      * @param int $rating the numeric rating between 1 and 5.
-     * @return mixed false if not authenticated otherwise the http response is sent.
+     * @return mixed false if not authenticated or rating is invalid otherwise the http response is sent.
      **/
     public function addNumericRating($videoId, $rating)
     {
@@ -554,17 +554,19 @@ class youtube
         $xml = "<?xml version='1.0' encoding='UTF-8'?><entry xmlns='http://www.w3.org/2005/Atom' xmlns:yt='http://gdata.youtube.com/schemas/2007'><yt:rating value='".($like === true ? 'like':'dislike')."'/></entry>";
         return $this->_data_request("/{$this->_uris['VIDEO_URI']}/{$videoId}/ratings", $xml);
     }
+    
     /**
-     * Adds a subscription to a specified user.
+     * Subscribes the currently authenticated user to the specified user.
      * 
-     * @param string userId the user you want to subscribe to.
+     * @param string $userId the user you want to subscribe to.
      * @return mixed false if not authenticated otherwise the http response is sent.
      */
     public function addSubscription($userId) 
     {
-        $xml = '<?xml version="1.0" encoding="UTF-8"?><entry xmlns="http://www.w3.org/2005/Atom" xmlns:yt="http://gdata.youtube.com/schemas/2007"><category scheme="http://gdata.youtube.com/schemas/2007/subscriptiontypes.cat" term="channel"/><yt:username>'.$userId.'</yt:username></entry>';
-        return $this->_data_request("/".$this->_uris['SUBSCRIPTION_URI'], $xml);
+        $xml = "<?xml version='1.0' encoding='UTF-8'?><entry xmlns='http://www.w3.org/2005/Atom' xmlns:yt='http://gdata.youtube.com/schemas/2007'><category scheme='http://gdata.youtube.com/schemas/2007/subscriptiontypes.cat' term='channel'/><yt:username>{$userId}</yt:username></entry>";
+        return $this->_data_request("/{$this->_uris['SUBSCRIPTION_URI']}", $xml);
     }
+    
     /**
      * Adds specified video as a favorite video.
      * 
@@ -573,9 +575,9 @@ class youtube
      */
     public function addFavorite($videoId) 
     {
-        $xml = '<?xml version="1.0" encoding="UTF-8"?><entry xmlns="http://www.w3.org/2005/Atom"><id>' . $videoId . '</id></entry>';
-        return $this->_data_request("/".$this->_uris['FAVORITE_URI'], $xml);
+        $xml = "<?xml version='1.0' encoding='UTF-8'?><entry xmlns='http://www.w3.org/2005/Atom'><id>{$videoId}</id></entry>";
+        return $this->_data_request("/{$this->_uris['FAVORITE_URI']}", $xml);
     }
 }
-// ./system/application/libraries
+// ./application/libraries
 ?>
