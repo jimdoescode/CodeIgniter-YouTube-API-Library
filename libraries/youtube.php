@@ -44,7 +44,7 @@ class youtube
         'USER_URI'                          => 'feeds/api/users',
         'INBOX_FEED_URI'                    => 'feeds/api/users/default/inbox',
         'VIDEO_URI'                         => 'feeds/api/videos',
-        'SUBSCRIPTION_URI'					=> 'feeds/api/users/default/subscriptions',
+        'SUBSCRIPTION_URI'                  => 'feeds/api/users/default/subscriptions',
         'FAVORITE_URI'                      => 'feeds/api/users/default/favorites',
         'USER_UPLOADS_REL'                  => 'schemas/2007#user.uploads',
         'USER_PLAYLISTS_REL'                => 'schemas/2007#user.playlists',
