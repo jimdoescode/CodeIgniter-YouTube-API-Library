@@ -44,6 +44,8 @@ class youtube
         'USER_URI'                          => 'feeds/api/users',
         'INBOX_FEED_URI'                    => 'feeds/api/users/default/inbox',
         'VIDEO_URI'                         => 'feeds/api/videos',
+        'SUBSCRIPTION_URI'                  => 'feeds/api/users/default/subscriptions',
+        'FAVORITE_URI'                      => 'feeds/api/users/default/favorites',
         'USER_UPLOADS_REL'                  => 'schemas/2007#user.uploads',
         'USER_PLAYLISTS_REL'                => 'schemas/2007#user.playlists',
         'USER_SUBSCRIPTIONS_REL'            => 'schemas/2007#user.subscriptions',
@@ -551,6 +553,28 @@ class youtube
     {
         $xml = "<?xml version='1.0' encoding='UTF-8'?><entry xmlns='http://www.w3.org/2005/Atom' xmlns:yt='http://gdata.youtube.com/schemas/2007'><yt:rating value='".($like === true ? 'like':'dislike')."'/></entry>";
         return $this->_data_request("/{$this->_uris['VIDEO_URI']}/{$videoId}/ratings", $xml);
+    }
+    /**
+     * Adds a subscription to a specified user.
+     * 
+     * @param string userId the user you want to subscribe to.
+     * @return mixed false if not authenticated otherwise the http response is sent.
+     */
+    public function addSubscription($userId) 
+    {
+        $xml = '<?xml version="1.0" encoding="UTF-8"?><entry xmlns="http://www.w3.org/2005/Atom" xmlns:yt="http://gdata.youtube.com/schemas/2007"><category scheme="http://gdata.youtube.com/schemas/2007/subscriptiontypes.cat" term="channel"/><yt:username>'.$userId.'</yt:username></entry>';
+        return $this->_data_request("/".$this->_uris['SUBSCRIPTION_URI'], $xml);
+    }
+    /**
+     * Adds specified video as a favorite video.
+     * 
+     * @param string $videoId the youtube video you want to add to favorites.
+     * @return mixed false if not authenticated otherwise the http response is sent. 
+     */
+    public function addFavorite($videoId) 
+    {
+        $xml = '<?xml version="1.0" encoding="UTF-8"?><entry xmlns="http://www.w3.org/2005/Atom"><id>' . $videoId . '</id></entry>';
+        return $this->_data_request("/".$this->_uris['FAVORITE_URI'], $xml);
     }
 }
 // ./system/application/libraries
