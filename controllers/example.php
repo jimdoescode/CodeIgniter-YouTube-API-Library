@@ -2,6 +2,11 @@
 
 class Example extends CI_Controller
 {
+	public function __construct()
+	{
+		$this->load->library('session');
+	}
+	
 	//CALL THIS METHOD FIRST BY GOING TO
 	//www.your_url.com/index.php/request_youtube
 	public function request_youtube()
@@ -55,6 +60,23 @@ class Example extends CI_Controller
 		
 		$this->load->library('youtube', $params);
 		echo $this->youtube->getUserUploads();
+	}
+	
+	public function direct_upload()
+	{
+		$videoPath = 'THE RELATIVE PATH ON YOUR SERVER TO THE VIDEO';
+		$videoType = 'THE CONTENT TYPE OF THE VIDEO'; //This is the mime type of the video ex: 'video/3gpp'
+		
+		$params['apikey'] = 'ENTER YOUR GOOGLE YOUTUBE API KEY';
+		$params['oauth']['key'] = 'ENTER YOUR GOOGLE CONSUMER KEY';
+		$params['oauth']['secret'] = 'ENTER YOUR GOOGLE CONSUMER SECRET';
+		$params['oauth']['algorithm'] = 'HMAC-SHA1';
+		$params['oauth']['access_token'] = array('oauth_token'=>urlencode($this->session->userdata('oauth_token')),
+												 'oauth_token_secret'=>urlencode($this->session->userdata('oauth_token_secret')));
+		$this->load->library('youtube', $params);
+		
+		$metadata = '<entry xmlns="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" xmlns:yt="http://gdata.youtube.com/schemas/2007"><media:group><media:title type="plain">Test Direct Upload</media:title><media:description type="plain">Test Direct Uploading.</media:description><media:category scheme="http://gdata.youtube.com/schemas/2007/categories.cat">People</media:category><media:keywords>test</media:keywords></media:group></entry>';
+		echo $this->youtube->directUpload($videoPath, $videoType, $metadata);
 	}
 }
 
