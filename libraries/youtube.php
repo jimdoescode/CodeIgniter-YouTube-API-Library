@@ -41,6 +41,7 @@ class youtube
         'STANDARD_MOST_VIEWED_URI'          => 'feeds/api/standardfeeds/most_viewed',
         'STANDARD_RECENTLY_FEATURED_URI'    => 'feeds/api/standardfeeds/recently_featured',
         'STANDARD_WATCH_ON_MOBILE_URI'      => 'feeds/api/standardfeeds/watch_on_mobile',
+        'PLAYLIST_URI'                      => 'feeds/api/playlists',
         'USER_URI'                          => 'feeds/api/users',
         'INBOX_FEED_URI'                    => 'feeds/api/users/default/inbox',
         'SUBSCRIPTION_URI'                  => 'feeds/api/users/default/subscriptions',
@@ -387,7 +388,7 @@ class youtube
      * @param $metadata the data to send for this request (usually XML)
      * @return mixed false if not authroized otherwise the response is returned.
      **/
-    private function _data_request($uri, $metadata)
+    private function _data_request($uri, $metadata, $method = 'POST')
     {
         if($this->_access !== false)
         {
@@ -400,7 +401,7 @@ class youtube
             
             $extra .= "Content-Length: ".mb_strlen($metadata.self::LINE_END).self::LINE_END.self::LINE_END;
             
-            $fullrequest = $this->_build_header($url, $header, $extra, 'POST');
+            $fullrequest = $this->_build_header($url, $header, $extra, $method);
             $fullrequest .= $metadata.self::LINE_END;
             
             $handle = $this->_connect();
@@ -577,6 +578,33 @@ class youtube
     {
         $xml = "<?xml version='1.0' encoding='UTF-8'?><entry xmlns='http://www.w3.org/2005/Atom'><id>{$videoId}</id></entry>";
         return $this->_data_request("/{$this->_uris['FAVORITE_URI']}", $xml);
+    }
+
+    /**
+     * Adds specified video to the specified playlist
+     * 
+     * @param string $videoId the youtube video you want to add to the playlist.
+     * @param string $playlistId the youtube playlist you want to add the video to.
+     * @return mixed false if not authenticated otherwise the http response is sent. 
+     */
+    public function addVideoToPlaylist($videoId, $playlistId)
+    {
+        $xml = "<?xml version='1.0' encoding='UTF-8'?><entry xmlns='http://www.w3.org/2005/Atom' xmlns:yt='http://gdata.youtube.com/schemas/2007'><id>{$videoId}</id></entry>";
+        return $this->_data_request("/{$this->_uris['PLAYLIST_URI']}/{$playlistId}", $xml);
+    }
+    
+    /**
+     * Sets the position of the specified video entry in the specified playlist
+     * 
+     * @param string $playlistEntryId the youtube video entry you want to change the position.
+     * @param string $playlistId the youtube playlist you want to change the position.
+     * @param integer $position the position of the video in the playlist.
+     * @return mixed false if not authenticated otherwise the http response is sent. 
+     */
+    public function setVideoPositionInPlaylist($playlistEntryId, $playlistId, $position)
+    {
+        $xml = "<?xml version='1.0' encoding='UTF-8'?><entry xmlns='http://www.w3.org/2005/Atom' xmlns:yt='http://gdata.youtube.com/schemas/2007'><yt:position>{$position}</yt:position></entry>";
+        return $this->_data_request("/{$this->_uris['PLAYLIST_URI']}/{$playlistId}/{$playlistEntryId}", $xml, 'PUT');
     }
 }
 // ./application/libraries
