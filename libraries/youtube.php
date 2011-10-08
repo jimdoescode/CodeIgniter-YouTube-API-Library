@@ -165,7 +165,11 @@ class youtube
         $chunksize = rtrim(fgets($handle));
         //Convert hex chunk size to int
         if(ctype_xdigit($chunksize))$chunksize = hexdec($chunksize);
-        else $chunksize = 0;
+        else //We aren't dealing with a chunksize so set the response.
+        {
+            $response = $chunksize;
+            $chunksize = 0;
+        }
         
         if(self::DEBUG)error_log("\nCHUNKSIZE: {$chunksize}");
         
