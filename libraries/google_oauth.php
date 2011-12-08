@@ -44,6 +44,9 @@ class google_oauth
     //google service you are authenticating against.
     const SCOPE         = 'https://gdata.youtube.com'; //YouTube
 
+    //Set this flag to true for detailed logging.
+    const DEBUG         = false;
+
     //Array that should contain the consumer secret and
     //key which should be passed into the constructor.
     private $_consumer = false;
@@ -162,9 +165,16 @@ class google_oauth
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array($auth));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, explode("\r\n", $auth));
+        curl_setopt($ch, CURLINFO_HEADER_OUT, true);
 
         $response = curl_exec($ch);
+
+        if(self::DEBUG)
+        {
+            error_log(print_r(curl_getinfo($ch), true));
+            error_log($response);
+        }
         curl_close($ch);
         return $response;
     }
