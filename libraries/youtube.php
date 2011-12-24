@@ -222,7 +222,8 @@ class youtube
     /**
      * Executes a request that does not pass data, and returns the response.
      *
-     * @param $uri The URI that corresponds to the data we want.
+     * @param string $uri The URI that corresponds to the data we want.
+     * @param array $params additional parameters to pass
      * @return the xml response from youtube.
      **/
     private function _response_request($uri, array $params = array())
@@ -330,9 +331,28 @@ class youtube
         return $this->_response_request("/{$this->_uris['STANDARD_WATCH_ON_MOBILE_URI']}", array_merge(array('start-index'=>1, 'max-results'=>10), $params));
     }
 
-    public function getPlaylistListFeed($user = 'default', array $params = array())
+    /**
+     * Retrieves a feed of playlist urls that the specified user manages.
+     *
+     * @param string $user the user whose playlists you wish to retrieve
+     * @param array $params additional parameters to pass.
+     * @return the xml response from youtube.
+     */
+    public function getUserPlaylistFeed($user = 'default', array $params = array())
     {
-        return $this->_response_request("/{$this->_uris['USER_URI']}/{$user}/playlists", array_merge(array('start-index'=>1, 'max-results'=>10), $params));
+        return $this->_response_request("/{$this->_uris['USER_URI']}/{$user}/playlists", array_merge(array('v'=>self::API_VERSION), $params));
+    }
+
+    /**
+     * Retrieves a feed of videos for the specified playlist.
+     *
+     * @param string $playlist the id of the playlist you wish to retrieve
+     * @param array $params additional parameters to pass
+     * @return the xml response from youtube.
+     */
+    public function getPlaylistFeed($playlist, array $params = array())
+    {
+        return $this->_response_request("/{$this->_uris['PLAYLIST_URI']}/{$playlist}", array_merge(array('v'=>self::API_VERSION), $params));
     }
 
     public function getSubscriptionFeed($user = 'default', array $params = array())
