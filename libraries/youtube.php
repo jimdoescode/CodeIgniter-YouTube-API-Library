@@ -321,7 +321,13 @@ class youtube
     {
         return $this->_response_request("/{$this->_uris['STANDARD_MOST_VIEWED_URI']}", array_merge(array('start-index'=>1, 'max-results'=>10), $params));
     }
-    
+
+    /**
+     * Retrieves a feed of the most recently uploaded videos.
+     *
+     * @param array $params additional parameters to pass to youtube see: http://code.google.com/apis/youtube/2.0/reference.html#Query_parameter_definitions
+     * @return the xml response from youtube.
+     */
     public function getMostRecentVideoFeed(array $params = array())
     {
         return $this->_response_request("/{$this->_uris['STANDARD_MOST_RECENT_URI']}", array_merge(array('start-index'=>1, 'max-results'=>10), $params));
