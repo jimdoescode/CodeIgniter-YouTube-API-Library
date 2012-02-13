@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-class youtube
+class Youtube
 {
     const HTTP_1 = '1.1';
     const HOST = 'gdata.youtube.com';

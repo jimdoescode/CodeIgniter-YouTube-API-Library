@@ -32,7 +32,7 @@ THE SOFTWARE.
  * I currently use it in my YouTube API but it can be used
  * for any google service that allows for OAuth.
  */
-class google_oauth
+class Google_oauth
 {
     const SCHEME = 'https';
     const HOST = 'www.google.com';
