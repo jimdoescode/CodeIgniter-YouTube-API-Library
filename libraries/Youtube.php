@@ -458,55 +458,86 @@ class Youtube
      * @param string $path The path on your server to the video to upload.
      * @param string $contenttype The mime-type of the video to upload.
      * @param string $metadata XML information about the video to upload.
+     * @param int (optional) $filesize the size of the video to upload in bytes. The library will calculate it if not set.
      * @param string (optional) $user the user name whose account this video will go to. Defaults to the authenticated user.
      **/
-    public function directUpload($path, $contenttype, $metadata, $user = 'default')
+    public function directUpload($path, $contenttype, $metadata, $filesize = false, $user = 'default')
     {
         if($this->_access !== false)
         {
             $uri = "/{$this->_uris['USER_URI']}/{$user}/uploads";
             $header = "POST {$uri} HTTP/".self::HTTP_1.self::LINE_END;
             //We use a special host for direct uploads.
-            $host = "uploads.gdata.youtube.com";
-            $url = "http://".$host.$uri;
+            $host = 'uploads.gdata.youtube.com';
+            $url = "http://{$host}{$uri}";
             $extra = "GData-Version: 2.0".self::LINE_END;
             //Add the file name to the slug parameter.
             $extra .= "Slug: ".basename($path).self::LINE_END;
-            //Create a random boundry string.
+            //Create a random boundary string.
             $this->CI->load->helper('string');
-            $boundry = random_string();
-            $extra .= "Content-Type: multipart/related; boundary=\"{$boundry}\"".self::LINE_END;
-            
+            $boundary = random_string();
+            $extra .= "Content-Type: multipart/related; boundary=\"{$boundary}\"".self::LINE_END;
+
             //Build out the data portion of the request
-            $data = "--".$boundry.self::LINE_END;
+            $data = "--{$boundary}".self::LINE_END;
             $data .= "Content-Type: application/atom+xml; charset=UTF-8".self::LINE_END.self::LINE_END;
             $data .= $metadata.self::LINE_END;
-            $data .= "--".$boundry.self::LINE_END;
+            $data .= "--{$boundary}".self::LINE_END;
             $data .= "Content-Type: ".$contenttype.self::LINE_END;
             $data .= "Content-Transfer-Encoding: binary".self::LINE_END.self::LINE_END;
-            $data .= file_get_contents($path).self::LINE_END;
-            $data .= "--{$boundry}--".self::LINE_END;
-            
+
+            $end = self::LINE_END."--{$boundary}--".self::LINE_END;
+
+            //If file size is not set then calculate it
+            //NOTE: This may cause memory problems for large videos
+            if($filesize === false)$filesize = filesize($path);
+
+            $length = strlen($data) + intval($filesize) + strlen($end);
+
             //Calculate the size of the data portion.
-            $extra .= "Content-Length: ".strlen($data).self::LINE_END.self::LINE_END;
+            $extra .= "Content-Length: {$length}".self::LINE_END.self::LINE_END;
             $this->_header['Host'] = $host;//Swap the default host
-            $fullrequest = $this->_build_header($url, $header, $extra, 'POST');
+            $start = $this->_build_header($url, $header, $extra, 'POST');
             $this->_header['Host'] = self::HOST;//Revert the default host.
-            $fullrequest .= $data;
-            
+            $start .= $data;
+
             $handle = null;
             //Connect to the special upload host
             $handle = $this->_connect($host);
-            
-            $this->_write($handle, $fullrequest);
+            //Write the request header
+            $this->_write($handle, $start);
+            //Write the file data
+            $this->_write_file($handle, $path);
+            //Write the ending
+            $this->_write($handle, $end);
+
             $output = $this->_read($handle);
-            
+
             fclose($handle);
             $handle = null;
-            
+
             return $output;
         }
         return false;
+    }
+
+    /**
+     * Writes a file specified by path to the stream specified by the handle.
+     * The file is written in chunks specified by the chunk size to decrease
+     * the potential memory footprint.
+     *
+     * @param stream $handle Handle to the stream to write to
+     * @param string $path Path of the file to read from
+     * @param int $chunksize Size of each chunk that is read from the file.
+     */
+    private function _write_file($handle, $path, $chunksize = 8192)
+    {
+        $filehandle = fopen($path, 'r');
+        while(!feof($filehandle))
+            fwrite($handle, fread($filehandle, $chunksize));
+
+        fclose($filehandle);
+        $filehandle = null;
     }
 
 
