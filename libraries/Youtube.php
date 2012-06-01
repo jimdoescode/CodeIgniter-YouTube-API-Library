@@ -77,7 +77,7 @@ class Youtube
      * @param string $clientId The clientId issued by the YouTube dashboard
      * @param string $developerKey The developerKey issued by the YouTube dashboard
      */
-    public function youtube($params)
+    public function __construct($params)
     {
         if(isset($params['apikey']))$this->_header['X-GData-Key'] = 'key='.$params['apikey'];
         $this->CI =& get_instance();
@@ -396,9 +396,9 @@ class Youtube
         return $this->_response_request("/{$this->_uris['USER_URI']}/{$user}/favorites", array_merge(array('start-index'=>1, 'max-results'=>10), $params));
     }
 
-    public function getUserProfile($user = 'default')
+    public function getUserProfile($user = 'default', array $params = array())
     {
-        return $this->_response_request("/{$this->_uris['USER_URI']}/{$user}");
+        return $this->_response_request("/{$this->_uris['USER_URI']}/{$user}", array_merge(array('v'=>self::API_VERSION), $params));
     }
 
     public function getUserActivity($user = 'default', array $params = array())
@@ -411,9 +411,9 @@ class Youtube
      *
      * @return the youtube response xml.
      **/
-    public function getInboxFeedForCurrentUser()
+    public function getInboxFeedForCurrentUser(array $params = array())
     {
-        if($this->_access !== false)return $this->_response_request ("/{$this->_uris['INBOX_FEED_URI']}");
+        if($this->_access !== false)return $this->_response_request ("/{$this->_uris['INBOX_FEED_URI']}", array_merge(array('v'=>self::API_VERSION), $params));
         else return false;
     }
 

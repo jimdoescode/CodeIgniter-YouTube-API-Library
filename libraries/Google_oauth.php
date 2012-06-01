@@ -59,7 +59,7 @@ class Google_oauth
      *
      * @param array $params
      */
-    public function google_oauth($params)
+    public function __construct($params)
     {
         $this->CI =& get_instance();
         $this->CI->load->helper('oauth');
