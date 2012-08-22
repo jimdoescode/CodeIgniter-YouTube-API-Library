@@ -319,12 +319,12 @@ class Youtube
     
     public function getMostPopularVideoFeed(array $params = array())
     {
-	return $this->getMostViewedVideoFeed($params);
+        return $this->_response_request("/{$this->_uris['STANDARD_MOST_POPULAR_URI']}", array_merge(array('start-index'=>1, 'max-results'=>10), $params));
     }
 
     public function getMostViewedVideoFeed(array $params = array())
     {
-        return $this->_response_request("/{$this->_uris['STANDARD_MOST_POPULAR_URI']}", array_merge(array('start-index'=>1, 'max-results'=>10), $params));
+	return $this->getMostPopularVideoFeed($params);
     }
 
     /**
