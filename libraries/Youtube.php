@@ -38,7 +38,7 @@ class Youtube
 
     private $_uris = array(
         'STANDARD_TOP_RATED_URI'            => 'feeds/api/standardfeeds/top_rated',
-        'STANDARD_MOST_VIEWED_URI'          => 'feeds/api/standardfeeds/most_viewed',
+        'STANDARD_MOST_POPULAR_URI'         => 'feeds/api/standardfeeds/most_popular',
         'STANDARD_MOST_RECENT_URI'          => 'feeds/api/standardfeeds/most_recent',
         'STANDARD_RECENTLY_FEATURED_URI'    => 'feeds/api/standardfeeds/recently_featured',
         'STANDARD_WATCH_ON_MOBILE_URI'      => 'feeds/api/standardfeeds/watch_on_mobile',
@@ -317,9 +317,14 @@ class Youtube
         return $this->_response_request("/{$this->_uris['STANDARD_TOP_RATED_URI']}", array_merge(array('start-index'=>1, 'max-results'=>10), $params));
     }
     
+    public function getMostPopularVideoFeed(array $params = array())
+    {
+        return $this->_response_request("/{$this->_uris['STANDARD_MOST_POPULAR_URI']}", array_merge(array('start-index'=>1, 'max-results'=>10), $params));
+    }
+
     public function getMostViewedVideoFeed(array $params = array())
     {
-        return $this->_response_request("/{$this->_uris['STANDARD_MOST_VIEWED_URI']}", array_merge(array('start-index'=>1, 'max-results'=>10), $params));
+	return $this->getMostPopularVideoFeed($params);
     }
 
     /**
@@ -675,4 +680,3 @@ class Youtube
     }
 }
 // ./application/libraries
-?>
