@@ -680,4 +680,3 @@ class Youtube
     }
 }
 // ./application/libraries
-?>
