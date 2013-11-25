@@ -433,7 +433,7 @@ class Youtube
     {
         if($this->_access !== false)
         {
-            $header = "POST {$uri} HTTP/".self::HTTP_1.self::LINE_END;
+            $header = "{$method} {$uri} HTTP/".self::HTTP_1.self::LINE_END;
             $url = self::URI_BASE.substr($uri, 1);
             $encoding = "UTF-8";
             $extra = "Content-Type: application/atom+xml; charset={$encoding}".self::LINE_END;
