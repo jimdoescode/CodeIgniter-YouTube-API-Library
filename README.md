@@ -1,3 +1,8 @@
+NOTE: THIS LIBRARY IS DEPRECATED 
+================================
+
+It is recommended that you use the official PHP API provided by YouTube at https://github.com/google/google-api-php-client
+
 CodeIgniter Youtube API Library
 ===============================
 
